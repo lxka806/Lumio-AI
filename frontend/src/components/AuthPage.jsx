@@ -35,6 +35,9 @@ function AuthPage({ onAuthenticated, sessionError }) {
                 setNotice("Account created. Sign in to continue.")
             } else {
                 const response = await api.post("/auth/login", { email, password })
+
+                localStorage.setItem("token", response.data.token)
+
                 onAuthenticated(response.data.user)
             }
         } catch (requestError) {
