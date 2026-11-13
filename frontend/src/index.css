@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #07100A;
+  --color-sidebar: #0B150E;
+  --color-surface: #101A13;
+  --color-border: #23392B;
+  --color-hover: #18251C;
+  --color-primary: #EAF5EC;
+  --color-secondary: #A7B8AB;
+  --color-muted: #829489;
+  --color-lime: #B6F36B;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --background-image-lime-gradient: linear-gradient(135deg, #7CF29C 0%, #B6F36B 100%);
+  --shadow-lime-glow: 0 0 22px rgba(124, 242, 156, 0.14);
+  --shadow-lime-focus: 0 0 0 3px rgba(182, 243, 107, 0.08);
+  --animate-fade-up: fade-up 0.35s ease-out both;
+  --animate-pulse-dot: pulse-dot 1.4s ease-in-out infinite;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes pulse-dot {
+    0%, 80%, 100% {
+      opacity: 0.35;
+      transform: scale(0.8);
+    }
+
+    40% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+html, body, #root {
+  height: 100%;
+  background-color: #07100A;
+  color: #EAF5EC;
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+
+  /* Very subtle ambient green gradient behind the whole app */
+  background-image:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(124, 242, 156, 0.08), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(182, 243, 107, 0.05), transparent 60%);
+  background-attachment: fixed;
+}
+
+::selection { background: rgba(124, 242, 156, 0.3); color: #EAF5EC; }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #23392B; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #2f4a38; }
+
+/* Shell layout used by App.jsx's <div className="app"> + <main className="main"> */
+.app {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  background: #07100A;
+  color: #EAF5EC;
+  overflow: hidden;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  position: relative;
+  background: #07100A;
+}
+
+/* Loading screen referenced in App.jsx */
+.auth-loading {
+  height: 100vh;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  background: #07100A;
+  color: #8AA394;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+}
+
+.gradient-lime-text {
+  background: linear-gradient(135deg, #7CF29C 0%, #B6F36B 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
