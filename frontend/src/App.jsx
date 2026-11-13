@@ -21,7 +21,29 @@ function App() {
     const [conversations, setConversations] = useState([])
 
     const [loading, setLoading] = useState(false)
-    const [sidebarOpen, setSidebarOpen] = useState(true)
+    const [sidebarOpen, setSidebarOpen] = useState(
+        () => window.matchMedia("(min-width: 768px)").matches
+    )
+
+    const clearInvalidSession = useCallback((showMessage = true) => {
+        localStorage.removeItem("token")
+        setUser(null)
+        setConversations([])
+        setMessages([])
+        setConversationId(null)
+        setAppError("")
+        setAuthError(
+            showMessage ? "Your session expired. Please sign in again." : ""
+        )
+    }, [])
+
+    useEffect(() => {
+        const desktopViewport = window.matchMedia("(min-width: 768px)")
+        const syncSidebar = event => setSidebarOpen(event.matches)
+
+        desktopViewport.addEventListener("change", syncSidebar)
+        return () => desktopViewport.removeEventListener("change", syncSidebar)
+    }, [])
 
     // Load conversation history
     const loadConversations = useCallback(async () => {
@@ -30,18 +52,20 @@ function App() {
             setConversations(response.data)
         } catch (error) {
             if (error.response?.status === 401) {
-                setUser(null)
+                clearInvalidSession()
             } else {
                 setAppError("Could not load your conversations.")
             }
         }
-    }, [])
+    }, [clearInvalidSession])
 
     // Restore user session
     useEffect(() => {
         let active = true
 
         const restoreSession = async () => {
+            const savedToken = localStorage.getItem("token")
+
             try {
                 const response = await api.get("/auth/profile")
 
@@ -50,10 +74,14 @@ function App() {
                 setUser(response.data.user)
                 await loadConversations()
             } catch (error) {
-                if (active && error.response?.status !== 401) {
-                    setAuthError(
-                        "Could not connect to the server. Please try again."
-                    )
+                if (active) {
+                    if (error.response?.status === 401) {
+                        clearInvalidSession(Boolean(savedToken))
+                    } else {
+                        setAuthError(
+                            "Could not connect to the server. Please try again."
+                        )
+                    }
                 }
             } finally {
                 if (active) {
@@ -67,13 +95,16 @@ function App() {
         return () => {
             active = false
         }
-    }, [loadConversations])
+    }, [clearInvalidSession, loadConversations])
 
     // Start a new chat
     const newChat = () => {
         setMessages([])
         setConversationId(null)
         setAppError("")
+        if (window.matchMedia("(max-width: 767px)").matches) {
+            setSidebarOpen(false)
+        }
     }
 
     // Open an existing conversation
@@ -84,9 +115,12 @@ function App() {
             setConversationId(id)
             setMessages(response.data.messages)
             setAppError("")
+            if (window.matchMedia("(max-width: 767px)").matches) {
+                setSidebarOpen(false)
+            }
         } catch (error) {
             if (error.response?.status === 401) {
-                setUser(null)
+                clearInvalidSession()
             } else {
                 setAppError("Could not open this conversation.")
             }
@@ -107,7 +141,7 @@ function App() {
             }
         } catch (error) {
             if (error.response?.status === 401) {
-                setUser(null)
+                clearInvalidSession()
             } else {
                 setAppError("Could not delete this conversation.")
             }
@@ -150,7 +184,7 @@ function App() {
             await loadConversations()
         } catch (error) {
             if (error.response?.status === 401) {
-                setUser(null)
+                clearInvalidSession()
                 return
             }
 
@@ -171,7 +205,10 @@ function App() {
         try {
             await api.post("/auth/logout")
         } catch (error) {
-            if (error.response?.status !== 401) {
+            if (error.response?.status === 401) {
+                clearInvalidSession(false)
+                return
+            } else {
                 setAppError("Could not log out. Please try again.")
                 return
             }
@@ -206,6 +243,13 @@ function App() {
     // Main application
     return (
         <div className="app">
+            {sidebarOpen && (
+                <button
+                    className="fixed inset-0 z-30 bg-black/60 md:hidden"
+                    onClick={() => setSidebarOpen(false)}
+                    aria-label="Close navigation"
+                />
+            )}
             <Sidebar
                 user={user}
                 conversations={conversations}

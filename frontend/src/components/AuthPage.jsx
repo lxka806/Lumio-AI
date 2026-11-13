@@ -36,6 +36,10 @@ function AuthPage({ onAuthenticated, sessionError }) {
             } else {
                 const response = await api.post("/auth/login", { email, password })
 
+                if (!response.data.token || !response.data.user) {
+                    throw new Error("The server returned an invalid login response.")
+                }
+
                 localStorage.setItem("token", response.data.token)
 
                 onAuthenticated(response.data.user)
@@ -43,6 +47,7 @@ function AuthPage({ onAuthenticated, sessionError }) {
         } catch (requestError) {
             setError(
                 requestError.response?.data?.message ||
+                requestError.message ||
                 "Unable to connect. Please try again."
             )
         } finally {

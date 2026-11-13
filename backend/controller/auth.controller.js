@@ -8,7 +8,7 @@ const crypto = require("crypto")
 const authCookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     path: "/"
 }
 
@@ -108,7 +108,10 @@ const login = async (req, res) => {
         }
 
         const token = jwt.sign(
-            { id: user._id },
+            {
+                id: user._id,
+                jti: crypto.randomBytes(16).toString("hex")
+            },
             process.env.JWT_SECRET,
             { expiresIn: "7d" }
         )

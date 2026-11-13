@@ -23,9 +23,13 @@ export default function Sidebar({
   return (
     <aside
       className={`
-        flex flex-col h-full bg-sidebar border-r border-border shrink-0
+        fixed inset-y-0 left-0 z-40 flex h-full w-[min(90vw,20rem)] min-w-[18rem]
+        flex-col bg-sidebar border-r border-border shrink-0
         transition-all duration-300 ease-out overflow-hidden
-        ${sidebarOpen ? "w-72 lg:w-80" : "w-0 border-r-0"}
+        md:relative md:inset-auto md:z-auto md:min-w-0 md:translate-x-0
+        ${sidebarOpen
+          ? "translate-x-0 md:w-72 lg:w-80"
+          : "-translate-x-full md:w-0 md:border-r-0"}
       `}
     >
       {/* Wordmark */}

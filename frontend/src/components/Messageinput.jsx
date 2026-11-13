@@ -20,7 +20,7 @@ export default function MessageInput({ input, setInput, onSend, loading }) {
   };
 
   return (
-    <div className="shrink-0 px-4 sm:px-8 lg:px-12 pb-5 pt-2 bg-gradient-to-t from-bg via-bg to-transparent">
+    <div className="shrink-0 px-3 sm:px-8 lg:px-12 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:pb-5 pt-2 bg-gradient-to-t from-bg via-bg to-transparent">
       <div className="mx-auto w-full max-w-3xl">
         <form
           onSubmit={onSend}

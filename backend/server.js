@@ -11,10 +11,11 @@ const conversationRoutes = require("./routers/conversation.route")
 
 const app = express()
 
+
 app.use(cors({
-    origin: "https://lumio-ai-luka.netlify.app",
-    credentials: true
-}))
+    origin: true,
+    credentials: true,
+}));
 
 app.use(express.json())
 app.use(cookieParser())
